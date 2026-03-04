@@ -30,32 +30,32 @@ const sizes = {
 }
 
 // Objet
-const bonhomme_sphere_geometry = new THREE.SphereGeometry(0.5, 64, 64)
-const bonhomme_sphere_material = new THREE.MeshStandardMaterial({ 
+const bonhomme_geometry = new THREE.SphereGeometry(0.5, 64, 64)
+const bonhomme_material = new THREE.MeshStandardMaterial({ 
     color: 0x60e28c,
     roughness: 0.7,
     metalness: 0
 })
-const bonhomme_sphere = new THREE.Mesh(bonhomme_sphere_geometry, bonhomme_sphere_material)
-bonhomme_sphere.castShadow = true
-bonhomme_sphere.receiveShadow = true
-scene.add(bonhomme_sphere)
+const bonhomme = new THREE.Mesh(bonhomme_geometry, bonhomme_material)
+bonhomme.castShadow = true
+bonhomme.receiveShadow = true
+scene.add(bonhomme)
 
-const bonhome_sphere_first_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
-const bonhome_sphere_first_eye_material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
-const bonhome_sphere_first_eye = new THREE.Mesh(bonhome_sphere_first_eye_geometry, bonhome_sphere_first_eye_material)
-bonhome_sphere_first_eye.position.set(0.15, 0.1, 0.45)
-bonhome_sphere_first_eye.castShadow = true
-bonhome_sphere_first_eye.receiveShadow = true
-scene.add(bonhome_sphere_first_eye)
+const bonhome_first_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
+const bonhome_first_eye_material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
+const bonhome_first_eye = new THREE.Mesh(bonhome_first_eye_geometry, bonhome_first_eye_material)
+bonhome_first_eye.position.set(0.15, 0.1, 0.45)
+bonhome_first_eye.castShadow = true
+bonhome_first_eye.receiveShadow = true
+scene.add(bonhome_first_eye)
 
-const bonhome_sphere_second_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
-const bonhome_sphere_second_eye_material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
-const bonhome_sphere_second_eye = new THREE.Mesh(bonhome_sphere_second_eye_geometry, bonhome_sphere_second_eye_material)
-bonhome_sphere_second_eye.position.set(-0.15, 0.1, 0.45)
-bonhome_sphere_second_eye.castShadow = true
-bonhome_sphere_second_eye.receiveShadow = true
-scene.add(bonhome_sphere_second_eye)
+const bonhome_second_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
+const bonhome_second_eye_material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
+const bonhome_second_eye = new THREE.Mesh(bonhome_second_eye_geometry, bonhome_second_eye_material)
+bonhome_second_eye.position.set(-0.15, 0.1, 0.45)
+bonhome_second_eye.castShadow = true
+bonhome_second_eye.receiveShadow = true
+scene.add(bonhome_second_eye)
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
 camera.position.z = 3
