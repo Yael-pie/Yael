@@ -23,6 +23,11 @@ const fillLight = new THREE.DirectionalLight(0x8899ff, 0.5)
 fillLight.position.set(-5, 0, -3)
 scene.add(fillLight)
 
+// Chargement de la texture d'œil
+const textureLoader = new THREE.TextureLoader()
+const eyeTexture = textureLoader.load('/textures/eye.jpg')
+eyeTexture.colorSpace = THREE.SRGBColorSpace
+
 // Tailles
 const sizes = {
     width: window.innerWidth - leftPart,
@@ -42,17 +47,27 @@ bonhomme.receiveShadow = true
 scene.add(bonhomme)
 
 const bonhome_first_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
-const bonhome_first_eye_material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
+const bonhome_first_eye_material = new THREE.MeshStandardMaterial({ 
+    map: eyeTexture,
+    roughness: 0.3,
+    metalness: 0
+})
 const bonhome_first_eye = new THREE.Mesh(bonhome_first_eye_geometry, bonhome_first_eye_material)
 bonhome_first_eye.position.set(0.15, 0.1, 0.45)
+bonhome_first_eye.rotation.y = -Math.PI / 2
 bonhome_first_eye.castShadow = true
 bonhome_first_eye.receiveShadow = true
 scene.add(bonhome_first_eye)
 
 const bonhome_second_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
-const bonhome_second_eye_material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
+const bonhome_second_eye_material = new THREE.MeshStandardMaterial({ 
+    map: eyeTexture,
+    roughness: 0.3,
+    metalness: 0
+})
 const bonhome_second_eye = new THREE.Mesh(bonhome_second_eye_geometry, bonhome_second_eye_material)
 bonhome_second_eye.position.set(-0.15, 0.1, 0.45)
+bonhome_second_eye.rotation.y = -Math.PI / 2
 bonhome_second_eye.castShadow = true
 bonhome_second_eye.receiveShadow = true
 scene.add(bonhome_second_eye)
