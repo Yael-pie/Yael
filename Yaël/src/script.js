@@ -1,5 +1,12 @@
 import * as THREE from 'three'
 
+const AppleCount = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+    generateApples(AppleCount);
+    AppleCount = Math.floor(Math.random() * 5) + 5;
+});
+
 // Canvas
 const canvas = document.getElementById('right_content_bg_canva')
 
@@ -37,6 +44,10 @@ window.addEventListener('resize', () => {
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
+
+function generateApples(count) {
+    // je vais générer mes pommes ici
+}
 
 // Animation loop
 const animate = () => {
