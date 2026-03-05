@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-let leftPart = 300
+let leftPart = window.innerWidth <= 950 ? 0 : 300
 
 let ecart = Math.min(1.5, Math.max(1.0, (window.innerWidth - leftPart) / 1000))
 
@@ -158,24 +158,28 @@ const bonhommeb8 = new Bonhomme(1, -1, 0, bonhommeRadius, eyeTexture)
 const bonhommeb69 = new Bonhomme(-1, -1, 0, bonhommeRadius, eyeTexture)
 
 bonhomme.addToScene(scene)
-bonhomme2.addToScene(scene)
-bonhomme3.addToScene(scene)
-bonhomme4.addToScene(scene)
-bonhommeb5.addToScene(scene)
-bonhommeb6.addToScene(scene)
-bonhomme7.addToScene(scene)
-bonhommeb8.addToScene(scene)
-bonhommeb69.addToScene(scene)
+if (leftPart != 0) {
+    bonhomme2.addToScene(scene)
+    bonhomme3.addToScene(scene)
+    bonhomme4.addToScene(scene)
+    bonhommeb5.addToScene(scene)
+    bonhommeb6.addToScene(scene)
+    bonhomme7.addToScene(scene)
+    bonhommeb8.addToScene(scene)
+    bonhommeb69.addToScene(scene)
+}
 
 bonhomme.lookAt(camera.position)
-bonhomme2.lookAt(camera.position)
-bonhomme3.lookAt(camera.position)
-bonhomme4.lookAt(camera.position)
-bonhommeb5.lookAt(camera.position)
-bonhommeb6.lookAt(camera.position)
-bonhomme7.lookAt(camera.position)
-bonhommeb8.lookAt(camera.position)
-bonhommeb69.lookAt(camera.position)
+if (leftPart != 0) {
+    bonhomme2.lookAt(camera.position)
+    bonhomme3.lookAt(camera.position)
+    bonhomme4.lookAt(camera.position)
+    bonhommeb5.lookAt(camera.position)
+    bonhommeb6.lookAt(camera.position)
+    bonhomme7.lookAt(camera.position)
+    bonhommeb8.lookAt(camera.position)
+    bonhommeb69.lookAt(camera.position)
+}
 
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -197,53 +201,85 @@ const mouse = new THREE.Vector2()
 
 document.addEventListener('mousemove', (event) => {
     bonhomme.updateEye(event)
-    bonhomme2.updateEye(event)
-    bonhomme3.updateEye(event)
-    bonhomme4.updateEye(event)
-    bonhommeb5.updateEye(event)
-    bonhommeb6.updateEye(event)
-    bonhomme7.updateEye(event)
-    bonhommeb8.updateEye(event)
-    bonhommeb69.updateEye(event)
+    if (leftPart !== 0) {
+        bonhomme2.updateEye(event)
+        bonhomme3.updateEye(event)
+        bonhomme4.updateEye(event)
+        bonhommeb5.updateEye(event)
+        bonhommeb6.updateEye(event)
+        bonhomme7.updateEye(event)
+        bonhommeb8.updateEye(event)
+        bonhommeb69.updateEye(event)
+    }
 })
 
 canvas.addEventListener('click', (event) => {
     bonhomme.updateColor(event)
-    bonhomme2.updateColor(event)
-    bonhomme3.updateColor(event)
-    bonhomme4.updateColor(event)
-    bonhommeb5.updateColor(event)
-    bonhommeb6.updateColor(event)
-    bonhomme7.updateColor(event)
-    bonhommeb8.updateColor(event)
-    bonhommeb69.updateColor(event)
+    if (leftPart !== 0) {
+        bonhomme2.updateColor(event)
+        bonhomme3.updateColor(event)
+        bonhomme4.updateColor(event)
+        bonhommeb5.updateColor(event)
+        bonhommeb6.updateColor(event)
+        bonhomme7.updateColor(event)
+        bonhommeb8.updateColor(event)
+        bonhommeb69.updateColor(event)
+    }
 })
 
 window.addEventListener('resize', () => {
+    const previousLeftPart = leftPart
+    leftPart = window.innerWidth <= 950 ? 0 : 300
     sizes.width = window.innerWidth - leftPart
     sizes.height = window.innerHeight
 
+    if (leftPart === 0 && previousLeftPart !== 0) {
+        scene.remove(bonhomme2.mesh)
+        scene.remove(bonhomme3.mesh)
+        scene.remove(bonhomme4.mesh)
+        scene.remove(bonhommeb5.mesh)
+        scene.remove(bonhommeb6.mesh)
+        scene.remove(bonhomme7.mesh)
+        scene.remove(bonhommeb8.mesh)
+        scene.remove(bonhommeb69.mesh)
+    } else if (leftPart !== 0 && previousLeftPart === 0) {
+        bonhomme2.addToScene(scene)
+        bonhomme3.addToScene(scene)
+        bonhomme4.addToScene(scene)
+        bonhommeb5.addToScene(scene)
+        bonhommeb6.addToScene(scene)
+        bonhomme7.addToScene(scene)
+        bonhommeb8.addToScene(scene)
+        bonhommeb69.addToScene(scene)
+    }
+
     ecart = Math.min(1.5, Math.max(1.0, (window.innerWidth - leftPart) / 1000))
     bonhomme.updatePos()
-    bonhomme2.updatePos()
-    bonhomme3.updatePos()
-    bonhomme4.updatePos()
-    bonhommeb5.updatePos()
-    bonhommeb6.updatePos()
-    bonhomme7.updatePos()
-    bonhommeb8.updatePos()
-    bonhommeb69.updatePos()
+    
+    if (leftPart !== 0) {
+        bonhomme2.updatePos()
+        bonhomme3.updatePos()
+        bonhomme4.updatePos()
+        bonhommeb5.updatePos()
+        bonhommeb6.updatePos()
+        bonhomme7.updatePos()
+        bonhommeb8.updatePos()
+        bonhommeb69.updatePos()
+    }
 
     // Mettre à jour le rayon du bonhomme (min 0.3, max 0.5) scaler
     bonhomme.updateScale()
-    bonhomme2.updateScale()
-    bonhomme3.updateScale()
-    bonhomme4.updateScale()
-    bonhommeb5.updateScale()
-    bonhommeb6.updateScale()
-    bonhomme7.updateScale()
-    bonhommeb8.updateScale()
-    bonhommeb69.updateScale()
+    
+    if (leftPart !== 0) {
+        bonhomme2.updateScale()
+        bonhomme3.updateScale()
+        bonhomme4.updateScale()
+        bonhommeb5.updateScale()
+        bonhommeb6.updateScale()
+        bonhomme7.updateScale()
+        bonhommeb8.updateScale()
+        bonhommeb69.updateScale()
+    }
 
     camera.aspect = sizes.width / sizes.height
     camera.updateProjectionMatrix()

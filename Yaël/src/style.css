@@ -162,3 +162,33 @@ body {
     z-index: 1;
     backdrop-filter: blur(10px);
 }
+
+/*RESPONSIVE ICI*/
+
+@media (max-width: 950px) {
+    body {
+        flex-direction: column;
+        background-color: rgb(69, 165, 101);
+    }
+    #left_profile {
+        width: 100vw;
+        background-color: transparent;
+        z-index: 1;
+        position: relative;
+    }
+    
+    #right_content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        background-color: rgb(69, 165, 101);
+    }
+    #right_content_bg_canva {
+        width: 100vw;
+        height: 100vh;
+    }
+
+}
