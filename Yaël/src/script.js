@@ -48,7 +48,7 @@ class Bonhomme {
         this.zFactor = zFactor
         
         const geometry = new THREE.SphereGeometry(radius, 32, 32)
-        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+        const material = new THREE.MeshStandardMaterial({ color: 0x60e28c })
         this.material = material
         this.mesh = new THREE.Mesh(geometry, material)
         this.mesh.castShadow = true
@@ -56,8 +56,9 @@ class Bonhomme {
         // Calculer position initiale avec ecart
         this.mesh.position.set(xFactor * ecart, yFactor * ecart, zFactor)
 
-        // premier oeil
-        const eyeGeometry1 = new THREE.SphereGeometry(0.1, 32, 32)
+        // premier oeil (proportionnel au rayon du bonhomme)
+        const eyeSize = radius * 0.2
+        const eyeGeometry1 = new THREE.SphereGeometry(eyeSize, 32, 32)
         const eyeMaterial1 = new THREE.MeshStandardMaterial({ 
             map: eyeTexture,
             roughness: 0.3,
@@ -71,7 +72,7 @@ class Bonhomme {
         this.mesh.add(this.firstEye)
 
         // second
-        const eyeGeometry2 = new THREE.SphereGeometry(0.1, 32, 32)
+        const eyeGeometry2 = new THREE.SphereGeometry(eyeSize, 32, 32)
         const eyeMaterial2 = new THREE.MeshStandardMaterial({ 
             map: eyeTexture,
             roughness: 0.3,
@@ -194,7 +195,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 
-canvas.addEventListener('mousemove', (event) => {
+document.addEventListener('mousemove', (event) => {
     bonhomme.updateEye(event)
     bonhomme2.updateEye(event)
     bonhomme3.updateEye(event)
