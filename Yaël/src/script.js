@@ -2,13 +2,13 @@ import * as THREE from 'three'
 
 let leftPart = 300
 
+let ecart = Math.min(1.5, Math.max(1.0, (window.innerWidth - leftPart) / 1000))
+
 // Canvas
 const canvas = document.getElementById('right_content_bg_canva')
 
 // Scène
 const scene = new THREE.Scene()
-
-const randomColor = Math.random() * 0xffffff
 
 // Lumières
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
@@ -39,47 +39,142 @@ const sizes = {
 // Calculer le rayon du bonhomme en fonction de la largeur (min 0.3, max 0.5)
 const bonhommeRadius = Math.min(0.5, Math.max(0.3, (sizes.width / 1000) * 0.5))
 
-// Objet
-const bonhomme_geometry = new THREE.SphereGeometry(bonhommeRadius, 64, 64)
-const bonhomme_material = new THREE.MeshStandardMaterial({ 
-    color: 0x60e28c,
-    roughness: 0.7,
-    metalness: 0
-})
-const bonhomme = new THREE.Mesh(bonhomme_geometry, bonhomme_material)
-bonhomme.castShadow = true
-bonhomme.receiveShadow = true
-scene.add(bonhomme)
+// Classe Bonhomme
+class Bonhomme {
+    constructor(xFactor, yFactor, zFactor, radius, eyeTexture) {
+        // Stocker les facteurs de position relative pour le resize
+        this.xFactor = xFactor
+        this.yFactor = yFactor
+        this.zFactor = zFactor
+        
+        const geometry = new THREE.SphereGeometry(radius, 32, 32)
+        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+        this.material = material
+        this.mesh = new THREE.Mesh(geometry, material)
+        this.mesh.castShadow = true
+        this.mesh.receiveShadow = true
+        // Calculer position initiale avec ecart
+        this.mesh.position.set(xFactor * ecart, yFactor * ecart, zFactor)
 
-const bonhome_first_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
-const bonhome_first_eye_material = new THREE.MeshStandardMaterial({ 
-    map: eyeTexture,
-    roughness: 0.3,
-    metalness: 0
-})
-const bonhome_first_eye = new THREE.Mesh(bonhome_first_eye_geometry, bonhome_first_eye_material)
-bonhome_first_eye.position.set(0.3 * bonhommeRadius, 0.2 * bonhommeRadius, 0.9 * bonhommeRadius)
-bonhome_first_eye.rotation.y = -Math.PI / 2
-bonhome_first_eye.castShadow = true
-bonhome_first_eye.receiveShadow = true
-bonhomme.add(bonhome_first_eye)
+        // premier oeil
+        const eyeGeometry1 = new THREE.SphereGeometry(0.1, 32, 32)
+        const eyeMaterial1 = new THREE.MeshStandardMaterial({ 
+            map: eyeTexture,
+            roughness: 0.3,
+            metalness: 0
+        })
+        this.firstEye = new THREE.Mesh(eyeGeometry1, eyeMaterial1)
+        this.firstEye.position.set(0.3 * radius, 0.2 * radius, 0.9 * radius)
+        this.firstEye.rotation.y = -Math.PI / 2
+        this.firstEye.castShadow = true
+        this.firstEye.receiveShadow = true
+        this.mesh.add(this.firstEye)
 
-const bonhome_second_eye_geometry = new THREE.SphereGeometry(0.1, 32, 32)
-const bonhome_second_eye_material = new THREE.MeshStandardMaterial({ 
-    map: eyeTexture,
-    roughness: 0.3,
-    metalness: 0
-})
-const bonhome_second_eye = new THREE.Mesh(bonhome_second_eye_geometry, bonhome_second_eye_material)
-bonhome_second_eye.position.set(-0.3 * bonhommeRadius, 0.2 * bonhommeRadius, 0.9 * bonhommeRadius)
-bonhome_second_eye.rotation.y = -Math.PI / 2
-bonhome_second_eye.castShadow = true
-bonhome_second_eye.receiveShadow = true
-bonhomme.add(bonhome_second_eye)
+        // second
+        const eyeGeometry2 = new THREE.SphereGeometry(0.1, 32, 32)
+        const eyeMaterial2 = new THREE.MeshStandardMaterial({ 
+            map: eyeTexture,
+            roughness: 0.3,
+            metalness: 0
+        })
+        this.secondEye = new THREE.Mesh(eyeGeometry2, eyeMaterial2)
+        this.secondEye.position.set(-0.3 * radius, 0.2 * radius, 0.9 * radius)
+        this.secondEye.rotation.y = -Math.PI / 2
+        this.secondEye.castShadow = true
+        this.secondEye.receiveShadow = true
+        this.mesh.add(this.secondEye)
+    }
+
+    addToScene(scene) {
+        scene.add(this.mesh)
+    }
+
+    updateEyesRotation(eyeRotationX, eyeRotationY) {
+        this.firstEye.rotation.x = eyeRotationX
+        this.firstEye.rotation.y = eyeRotationY - Math.PI / 2
+        this.secondEye.rotation.x = eyeRotationX
+        this.secondEye.rotation.y = eyeRotationY - Math.PI / 2
+    }
+
+    changeColor() {
+        this.material.color.setHex(Math.random() * 0xffffff)
+    }
+
+    setScale(scale) {
+        this.mesh.scale.set(scale, scale, scale)
+    }
+
+    lookAt(target) {
+        this.mesh.lookAt(target)
+    }
+
+    updateEye(event) {
+        const rect = canvas.getBoundingClientRect()
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+        const eyeRotationX = -mouse.y * 0.3
+        const eyeRotationY = mouse.x * 0.3
+
+        this.updateEyesRotation(eyeRotationX, eyeRotationY)
+    }
+
+    updateColor(event) {
+        const rect = canvas.getBoundingClientRect()
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObject(this.mesh)
+        if (intersects.length > 0) {
+            this.changeColor()
+        }
+    }
+
+    updateScale() {
+        const newRadius = Math.min(0.5, Math.max(0.3, (sizes.width / 1000) * 0.5))
+        const scale = newRadius / bonhommeRadius
+        this.setScale(scale)
+    }
+
+    updatePos() {
+        this.mesh.position.set(this.xFactor * ecart, this.yFactor * ecart, this.zFactor)
+    }
+}
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
 camera.position.z = 3
 scene.add(camera)
+
+// Créer un bonhomme
+const bonhomme = new Bonhomme(0, 0, 0, bonhommeRadius, eyeTexture)
+const bonhomme2 = new Bonhomme(1, 0, 0, bonhommeRadius, eyeTexture)
+const bonhomme3 = new Bonhomme(-1, 0, 0, bonhommeRadius, eyeTexture)
+const bonhomme4 = new Bonhomme(0, 1, 0, bonhommeRadius, eyeTexture)
+const bonhommeb5 = new Bonhomme(1, 1, 0, bonhommeRadius, eyeTexture)
+const bonhommeb6 = new Bonhomme(-1, 1, 0, bonhommeRadius, eyeTexture)
+const bonhomme7 = new Bonhomme(0, -1, 0, bonhommeRadius, eyeTexture)
+const bonhommeb8 = new Bonhomme(1, -1, 0, bonhommeRadius, eyeTexture)
+const bonhommeb69 = new Bonhomme(-1, -1, 0, bonhommeRadius, eyeTexture)
+
+bonhomme.addToScene(scene)
+bonhomme2.addToScene(scene)
+bonhomme3.addToScene(scene)
+bonhomme4.addToScene(scene)
+bonhommeb5.addToScene(scene)
+bonhommeb6.addToScene(scene)
+bonhomme7.addToScene(scene)
+bonhommeb8.addToScene(scene)
+bonhommeb69.addToScene(scene)
+
+bonhomme.lookAt(camera.position)
+bonhomme2.lookAt(camera.position)
+bonhomme3.lookAt(camera.position)
+bonhomme4.lookAt(camera.position)
+bonhommeb5.lookAt(camera.position)
+bonhommeb6.lookAt(camera.position)
+bonhomme7.lookAt(camera.position)
+bonhommeb8.lookAt(camera.position)
+bonhommeb69.lookAt(camera.position)
 
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -100,39 +195,54 @@ const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 
 canvas.addEventListener('mousemove', (event) => {
-    const rect = canvas.getBoundingClientRect()
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-    const eyeRotationX = -mouse.y * 0.3
-    const eyeRotationY = mouse.x * 0.3
-
-    bonhome_first_eye.rotation.x = eyeRotationX
-    bonhome_first_eye.rotation.y = eyeRotationY - Math.PI / 2
-    
-    bonhome_second_eye.rotation.x = eyeRotationX
-    bonhome_second_eye.rotation.y = eyeRotationY - Math.PI / 2
+    bonhomme.updateEye(event)
+    bonhomme2.updateEye(event)
+    bonhomme3.updateEye(event)
+    bonhomme4.updateEye(event)
+    bonhommeb5.updateEye(event)
+    bonhommeb6.updateEye(event)
+    bonhomme7.updateEye(event)
+    bonhommeb8.updateEye(event)
+    bonhommeb69.updateEye(event)
 })
 
 canvas.addEventListener('click', (event) => {
-    const rect = canvas.getBoundingClientRect()
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-    raycaster.setFromCamera(mouse, camera)
-    const intersects = raycaster.intersectObject(bonhomme)
-    if (intersects.length > 0) {
-        bonhomme.material.color.setHex(Math.random() * 0xffffff)
-    }
+    bonhomme.updateColor(event)
+    bonhomme2.updateColor(event)
+    bonhomme3.updateColor(event)
+    bonhomme4.updateColor(event)
+    bonhommeb5.updateColor(event)
+    bonhommeb6.updateColor(event)
+    bonhomme7.updateColor(event)
+    bonhommeb8.updateColor(event)
+    bonhommeb69.updateColor(event)
 })
 
 window.addEventListener('resize', () => {
     sizes.width = window.innerWidth - leftPart
     sizes.height = window.innerHeight
 
-    // Mettre à jour le rayon du bonhomme (min 0.3, max 0.5)
-    const newRadius = Math.min(0.5, Math.max(0.3, (sizes.width / 1000) * 0.5))
-    const scale = newRadius / bonhommeRadius
-    bonhomme.scale.set(scale, scale, scale)
+    ecart = Math.min(1.5, Math.max(1.0, (window.innerWidth - leftPart) / 1000))
+    bonhomme.updatePos()
+    bonhomme2.updatePos()
+    bonhomme3.updatePos()
+    bonhomme4.updatePos()
+    bonhommeb5.updatePos()
+    bonhommeb6.updatePos()
+    bonhomme7.updatePos()
+    bonhommeb8.updatePos()
+    bonhommeb69.updatePos()
+
+    // Mettre à jour le rayon du bonhomme (min 0.3, max 0.5) scaler
+    bonhomme.updateScale()
+    bonhomme2.updateScale()
+    bonhomme3.updateScale()
+    bonhomme4.updateScale()
+    bonhommeb5.updateScale()
+    bonhommeb6.updateScale()
+    bonhomme7.updateScale()
+    bonhommeb8.updateScale()
+    bonhommeb69.updateScale()
 
     camera.aspect = sizes.width / sizes.height
     camera.updateProjectionMatrix()
@@ -143,6 +253,7 @@ window.addEventListener('resize', () => {
 
 const animate = () => {
     requestAnimationFrame(animate)
+    
     renderer.render(scene, camera)
 }
 
