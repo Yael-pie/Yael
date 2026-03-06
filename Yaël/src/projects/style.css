@@ -197,6 +197,10 @@ body {
     border-radius: 20px;
 }
 
+.project_carroussel_element {
+    border: 3px solid #333;
+}
+
 /*RESPONSIVE ICI*/
 
 @media (max-width: 950px) {
@@ -225,5 +229,10 @@ body {
         width: 90vw !important;
         height: 90vw !important;
         aspect-ratio: unset;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "left"
+            "right_up"
+            "right_down";
     }
 }
