@@ -61,7 +61,7 @@ planetsGeometryProjects.setAttribute('color', new THREE.BufferAttribute(planetPr
 
 // material
 const planetsMaterial = new THREE.PointsMaterial({
-    size: 0.01,
+    size: 0.1,
     sizeAttenuation: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
