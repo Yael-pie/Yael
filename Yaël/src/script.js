@@ -1,297 +1,226 @@
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { FontLoader, TextGeometry } from 'three/examples/jsm/Addons.js'
 
-let leftPart = window.innerWidth <= 950 ? 0 : 300
-
-let ecart = Math.min(1.5, Math.max(1.0, (window.innerWidth - leftPart) / 1000))
+/**
+ * Base
+ */
+// Debug
 
 // Canvas
 const canvas = document.getElementById('right_content_bg_canva')
 
-// Scène
+// Scene
 const scene = new THREE.Scene()
+scene.background = new THREE.Color(0x000000)
 
-// Lumières
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
-scene.add(ambientLight)
+//font ici
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2)
-directionalLight.position.set(5, 5, 5)
-directionalLight.castShadow = true
-directionalLight.shadow.mapSize.width = 2048
-directionalLight.shadow.mapSize.height = 2048
-scene.add(directionalLight)
+//planetes projects et education
 
-const fillLight = new THREE.DirectionalLight(0x8899ff, 0.5)
-fillLight.position.set(-5, 0, -3)
-scene.add(fillLight)
+const planetsPosition = new Float32Array(3000 * 3)
+const planetEducationColors = new Float32Array(3000 * 3)
+const planetProjectsColors = new Float32Array(3000 * 3)
 
-// Chargement de la texture d'œil
-const textureLoader = new THREE.TextureLoader()
-const eyeTexture = textureLoader.load('./textures/eye.jpg')
-eyeTexture.colorSpace = THREE.SRGBColorSpace
+const planetsRadius = 1
+const planetsGeometry = new THREE.BufferGeometry()
 
-// Tailles
+for (let i = 0; i < 1000; i++) {
+    const i3_planets = 3 * i
+
+    const phi = Math.acos(-1 + (2 * i) / 1000)
+    const theta = Math.sqrt(1000 * Math.PI) * phi
+
+    const x = planetsRadius * Math.cos(theta) * Math.sin(phi)
+    const y = planetsRadius * Math.cos(phi)
+    const z = planetsRadius * Math.sin(theta) * Math.sin(phi)
+
+    planetsPosition[i3_planets] = x
+    planetsPosition[i3_planets + 1] = y
+    planetsPosition[i3_planets + 2] = z
+
+    planetEducationColors[i3_planets] = 0.6 + 0.4 * Math.sin(phi * 3)
+    planetEducationColors[i3_planets + 1] = Math.random() * 0.2
+    planetEducationColors[i3_planets + 2] = 0.1 + 0.2 * Math.cos(theta * 2)
+
+    planetProjectsColors[i3_planets] = 0.1 + 0.2 * Math.sin(theta * 3)
+    planetProjectsColors[i3_planets + 1] = 0.6 + 0.4 * Math.cos(phi * 2)
+    planetProjectsColors[i3_planets + 2] = Math.random() * 0.2
+}
+
+planetsGeometry.setAttribute('position', new THREE.BufferAttribute(planetsPosition, 3))
+
+const planetsGeometryEducation = new THREE.BufferGeometry()
+planetsGeometryEducation.setAttribute('position', new THREE.BufferAttribute(planetsPosition, 3))
+planetsGeometryEducation.setAttribute('color', new THREE.BufferAttribute(planetEducationColors, 3))
+
+const planetsGeometryProjects = new THREE.BufferGeometry()
+planetsGeometryProjects.setAttribute('position', new THREE.BufferAttribute(planetsPosition, 3))
+planetsGeometryProjects.setAttribute('color', new THREE.BufferAttribute(planetProjectsColors, 3))
+
+
+// material
+const planetsMaterial = new THREE.PointsMaterial({
+    size: 0.01,
+    sizeAttenuation: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexColors: true
+})
+
+// points
+const planetProjects = new THREE.Points(planetsGeometryProjects, planetsMaterial)
+scene.add(planetProjects)
+planetProjects.position.set(-10, 3)
+
+const planetEducation = new THREE.Points(planetsGeometryEducation, planetsMaterial)
+planetEducation.position.set(10, 1)
+scene.add(planetEducation)
+
+// galaxie
+
+const parameters = {}
+parameters.count = 260000
+parameters.size = 0.01
+parameters.radius = 5
+parameters.branches = 3
+parameters.spin = 3.67
+parameters.randomness = 2.6
+parameters.randomnessPower = 3
+parameters.insideColor = '#7bff00'
+parameters.outsideColor = '#0020ac'
+
+let particlesGeometry = null
+let particlesMaterial = null
+let particlesPoints = null
+
+function generateGalaxy() {
+
+    //new galaxy
+    if (particlesPoints !== null) {
+        particlesGeometry.dispose()
+        particlesMaterial.dispose()
+        scene.remove(particlesPoints)
+    }
+
+    //geometry
+    particlesGeometry = new THREE.BufferGeometry()
+
+    const positions = new Float32Array(parameters.count * 3)
+    const colors = new Float32Array(parameters.count * 3)
+
+    const colorInside = new THREE.Color(parameters.insideColor)
+    const colorOutside = new THREE.Color(parameters.outsideColor)
+
+    for (let i = 0; i < parameters.count; i++) {
+        const i3 = i * 3
+
+        const particlesRadius = Math.random() * parameters.radius
+        const branch_nb = (i % parameters.branches) / parameters.branches * Math.PI * 2
+
+        const spinAngle = particlesRadius * parameters.spin
+
+        const particlesRandomX = Math.pow((Math.random() - 0.5), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness
+        const particlesRandomY = Math.pow((Math.random() - 0.5), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness
+        const particlesRandomZ = Math.pow((Math.random() - 0.5), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness
+
+        positions[i3] = Math.cos(branch_nb + spinAngle) * particlesRadius + particlesRandomX
+        positions[i3 + 1] = particlesRandomY
+        positions[i3 + 2] = Math.sin(branch_nb + spinAngle) * particlesRadius + particlesRandomZ
+
+        const mixedColor = colorInside.clone()
+        mixedColor.lerp(colorOutside, particlesRadius / parameters.radius)
+
+        colors[i3] = mixedColor.r
+        colors[i3 + 1] = mixedColor.g
+        colors[i3 + 2] = mixedColor.b
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+    // material
+    particlesMaterial = new THREE.PointsMaterial({
+        size: parameters.size,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true
+    })
+
+    // points
+    particlesPoints = new THREE.Points(particlesGeometry, particlesMaterial)
+    scene.add(particlesPoints)
+}
+
+generateGalaxy()
+
+/**
+ * Sizes
+ */
 const sizes = {
-    width: window.innerWidth - leftPart,
-    height: window.innerHeight
+    width: canvas.clientWidth,
+    height: canvas.clientHeight
 }
 
-// Calculer le rayon du bonhomme en fonction de la largeur (min 0.3, max 0.5)
-const bonhommeRadius = Math.min(0.5, Math.max(0.3, (sizes.width / 1000) * 0.5))
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = canvas.clientWidth
+    sizes.height = canvas.clientHeight
 
-// Classe Bonhomme
-class Bonhomme {
-    constructor(xFactor, yFactor, zFactor, radius, eyeTexture) {
-        // Stocker les facteurs de position relative pour le resize
-        this.xFactor = xFactor
-        this.yFactor = yFactor
-        this.zFactor = zFactor
-        
-        const geometry = new THREE.SphereGeometry(radius, 32, 32)
-        const material = new THREE.MeshStandardMaterial({ color: 0x60e28c })
-        this.material = material
-        this.mesh = new THREE.Mesh(geometry, material)
-        this.mesh.castShadow = true
-        this.mesh.receiveShadow = true
-        // Calculer position initiale avec ecart
-        this.mesh.position.set(xFactor * ecart, yFactor * ecart, zFactor)
-
-        // premier oeil (proportionnel au rayon du bonhomme)
-        const eyeSize = radius * 0.2
-        const eyeGeometry1 = new THREE.SphereGeometry(eyeSize, 32, 32)
-        const eyeMaterial1 = new THREE.MeshStandardMaterial({ 
-            map: eyeTexture,
-            roughness: 0.3,
-            metalness: 0
-        })
-        this.firstEye = new THREE.Mesh(eyeGeometry1, eyeMaterial1)
-        this.firstEye.position.set(0.3 * radius, 0.2 * radius, 0.9 * radius)
-        this.firstEye.rotation.y = -Math.PI / 2
-        this.firstEye.castShadow = true
-        this.firstEye.receiveShadow = true
-        this.mesh.add(this.firstEye)
-
-        // second
-        const eyeGeometry2 = new THREE.SphereGeometry(eyeSize, 32, 32)
-        const eyeMaterial2 = new THREE.MeshStandardMaterial({ 
-            map: eyeTexture,
-            roughness: 0.3,
-            metalness: 0
-        })
-        this.secondEye = new THREE.Mesh(eyeGeometry2, eyeMaterial2)
-        this.secondEye.position.set(-0.3 * radius, 0.2 * radius, 0.9 * radius)
-        this.secondEye.rotation.y = -Math.PI / 2
-        this.secondEye.castShadow = true
-        this.secondEye.receiveShadow = true
-        this.mesh.add(this.secondEye)
-    }
-
-    addToScene(scene) {
-        scene.add(this.mesh)
-    }
-
-    updateEyesRotation(eyeRotationX, eyeRotationY) {
-        this.firstEye.rotation.x = eyeRotationX
-        this.firstEye.rotation.y = eyeRotationY - Math.PI / 2
-        this.secondEye.rotation.x = eyeRotationX
-        this.secondEye.rotation.y = eyeRotationY - Math.PI / 2
-    }
-
-    changeColor() {
-        this.material.color.setHex(Math.random() * 0xffffff)
-    }
-
-    setScale(scale) {
-        this.mesh.scale.set(scale, scale, scale)
-    }
-
-    lookAt(target) {
-        this.mesh.lookAt(target)
-    }
-
-    updateEye(event) {
-        const rect = canvas.getBoundingClientRect()
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-        const eyeRotationX = -mouse.y * 0.3
-        const eyeRotationY = mouse.x * 0.3
-
-        this.updateEyesRotation(eyeRotationX, eyeRotationY)
-    }
-
-    updateColor(event) {
-        const rect = canvas.getBoundingClientRect()
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-        raycaster.setFromCamera(mouse, camera)
-        const intersects = raycaster.intersectObject(this.mesh)
-        if (intersects.length > 0) {
-            this.changeColor()
-        }
-    }
-
-    updateScale() {
-        const newRadius = Math.min(0.5, Math.max(0.3, (sizes.width / 1000) * 0.5))
-        const scale = newRadius / bonhommeRadius
-        this.setScale(scale)
-    }
-
-    updatePos() {
-        this.mesh.position.set(this.xFactor * ecart, this.yFactor * ecart, this.zFactor)
-    }
-}
-
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.z = 3
-scene.add(camera)
-
-// Créer un bonhomme
-const bonhomme = new Bonhomme(0, 0, 0, bonhommeRadius, eyeTexture)
-const bonhomme2 = new Bonhomme(1, 0, 0, bonhommeRadius, eyeTexture)
-const bonhomme3 = new Bonhomme(-1, 0, 0, bonhommeRadius, eyeTexture)
-const bonhomme4 = new Bonhomme(0, 1, 0, bonhommeRadius, eyeTexture)
-const bonhommeb5 = new Bonhomme(1, 1, 0, bonhommeRadius, eyeTexture)
-const bonhommeb6 = new Bonhomme(-1, 1, 0, bonhommeRadius, eyeTexture)
-const bonhomme7 = new Bonhomme(0, -1, 0, bonhommeRadius, eyeTexture)
-const bonhommeb8 = new Bonhomme(1, -1, 0, bonhommeRadius, eyeTexture)
-const bonhommeb69 = new Bonhomme(-1, -1, 0, bonhommeRadius, eyeTexture)
-
-bonhomme.addToScene(scene)
-if (leftPart != 0) {
-    bonhomme2.addToScene(scene)
-    bonhomme3.addToScene(scene)
-    bonhomme4.addToScene(scene)
-    bonhommeb5.addToScene(scene)
-    bonhommeb6.addToScene(scene)
-    bonhomme7.addToScene(scene)
-    bonhommeb8.addToScene(scene)
-    bonhommeb69.addToScene(scene)
-}
-
-bonhomme.lookAt(camera.position)
-if (leftPart != 0) {
-    bonhomme2.lookAt(camera.position)
-    bonhomme3.lookAt(camera.position)
-    bonhomme4.lookAt(camera.position)
-    bonhommeb5.lookAt(camera.position)
-    bonhommeb6.lookAt(camera.position)
-    bonhomme7.lookAt(camera.position)
-    bonhommeb8.lookAt(camera.position)
-    bonhommeb69.lookAt(camera.position)
-}
-
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    alpha: true,
-    antialias: true
-})
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-renderer.shadowMap.enabled = true
-renderer.shadowMap.type = THREE.PCFSoftShadowMap
-renderer.toneMapping = THREE.ACESFilmicToneMapping
-renderer.toneMappingExposure = 1.2
-renderer.outputColorSpace = THREE.SRGBColorSpace
-
-// Détection de clic sur le bonhomme
-const raycaster = new THREE.Raycaster()
-const mouse = new THREE.Vector2()
-
-document.addEventListener('mousemove', (event) => {
-    bonhomme.updateEye(event)
-    if (leftPart !== 0) {
-        bonhomme2.updateEye(event)
-        bonhomme3.updateEye(event)
-        bonhomme4.updateEye(event)
-        bonhommeb5.updateEye(event)
-        bonhommeb6.updateEye(event)
-        bonhomme7.updateEye(event)
-        bonhommeb8.updateEye(event)
-        bonhommeb69.updateEye(event)
-    }
-})
-
-canvas.addEventListener('click', (event) => {
-    bonhomme.updateColor(event)
-    if (leftPart !== 0) {
-        bonhomme2.updateColor(event)
-        bonhomme3.updateColor(event)
-        bonhomme4.updateColor(event)
-        bonhommeb5.updateColor(event)
-        bonhommeb6.updateColor(event)
-        bonhomme7.updateColor(event)
-        bonhommeb8.updateColor(event)
-        bonhommeb69.updateColor(event)
-    }
-})
-
-window.addEventListener('resize', () => {
-    const previousLeftPart = leftPart
-    leftPart = window.innerWidth <= 950 ? 0 : 300
-    sizes.width = window.innerWidth - leftPart
-    sizes.height = window.innerHeight
-
-    if (leftPart === 0 && previousLeftPart !== 0) {
-        scene.remove(bonhomme2.mesh)
-        scene.remove(bonhomme3.mesh)
-        scene.remove(bonhomme4.mesh)
-        scene.remove(bonhommeb5.mesh)
-        scene.remove(bonhommeb6.mesh)
-        scene.remove(bonhomme7.mesh)
-        scene.remove(bonhommeb8.mesh)
-        scene.remove(bonhommeb69.mesh)
-    } else if (leftPart !== 0 && previousLeftPart === 0) {
-        bonhomme2.addToScene(scene)
-        bonhomme3.addToScene(scene)
-        bonhomme4.addToScene(scene)
-        bonhommeb5.addToScene(scene)
-        bonhommeb6.addToScene(scene)
-        bonhomme7.addToScene(scene)
-        bonhommeb8.addToScene(scene)
-        bonhommeb69.addToScene(scene)
-    }
-
-    ecart = Math.min(1.5, Math.max(1.0, (window.innerWidth - leftPart) / 1000))
-    bonhomme.updatePos()
-    
-    if (leftPart !== 0) {
-        bonhomme2.updatePos()
-        bonhomme3.updatePos()
-        bonhomme4.updatePos()
-        bonhommeb5.updatePos()
-        bonhommeb6.updatePos()
-        bonhomme7.updatePos()
-        bonhommeb8.updatePos()
-        bonhommeb69.updatePos()
-    }
-
-    // Mettre à jour le rayon du bonhomme (min 0.3, max 0.5) scaler
-    bonhomme.updateScale()
-    
-    if (leftPart !== 0) {
-        bonhomme2.updateScale()
-        bonhomme3.updateScale()
-        bonhomme4.updateScale()
-        bonhommeb5.updateScale()
-        bonhommeb6.updateScale()
-        bonhomme7.updateScale()
-        bonhommeb8.updateScale()
-        bonhommeb69.updateScale()
-    }
-
+    // Update camera
     camera.aspect = sizes.width / sizes.height
     camera.updateProjectionMatrix()
 
+    // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-const animate = () => {
-    requestAnimationFrame(animate)
-    
+/**
+ * Camera
+ */
+// Base camera (high to see my galaxy)
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+camera.position.x = 0
+camera.position.y = 10
+camera.position.z = 10
+scene.add(camera)
+
+// Controls
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
+controls.enableZoom = false
+
+/**
+ * Renderer
+ */
+const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true,
+    alpha: false
+})
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setSize(sizes.width, sizes.height)
+renderer.shadowMap.enabled = true
+
+/**
+ * Animate
+ */
+const clock = new THREE.Clock()
+
+const tick = () =>
+{
+    const elapsedTime = clock.getElapsedTime()
+
+    // orbit controls update
+    controls.update()
+
+    // Render
     renderer.render(scene, camera)
+
+    window.requestAnimationFrame(tick)
 }
 
-animate()
+tick()
