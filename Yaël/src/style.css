@@ -201,4 +201,7 @@ body {
         padding: max(10px, 0.52vw);
         border-radius: max(5px, 0.26vw);
     }
+    #profile_about_text {
+        border-color: #777777;
+    }
 }
