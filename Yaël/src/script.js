@@ -207,6 +207,7 @@ scene.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.enableZoom = true
+controls.enablePan = false
 // Limiter le dezoom à la distance de la caméra de base
 const initialDistance = Math.sqrt(camera.position.x ** 2 + camera.position.y ** 2 + camera.position.z ** 2)
 controls.maxDistance = initialDistance
