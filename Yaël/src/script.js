@@ -164,10 +164,10 @@ const sizes = {
 }
 
 //check pour replacer
-if (document.documentElement.clientWidth <= 1510) {
-    planetEducation.visible = false
-    planetProjects.visible = false
-}
+// if (document.documentElement.clientWidth <= 1510) {
+//     planetEducation.visible = false
+//     planetProjects.visible = false
+// }
 
 window.addEventListener('resize', () =>
 {
@@ -206,7 +206,10 @@ scene.add(camera)
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
-controls.enableZoom = false
+controls.enableZoom = true
+// Limiter le dezoom à la distance de la caméra de base
+const initialDistance = Math.sqrt(camera.position.x ** 2 + camera.position.y ** 2 + camera.position.z ** 2)
+controls.maxDistance = initialDistance
 
 /**
  * Renderer
