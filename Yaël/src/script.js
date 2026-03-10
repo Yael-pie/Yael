@@ -159,15 +159,15 @@ generateGalaxy()
  * Sizes
  */
 const sizes = {
-    width: canvas.clientWidth,
-    height: canvas.clientHeight
+    width: canvas.parentElement.offsetWidth,
+    height: canvas.parentElement.offsetHeight
 }
 
 window.addEventListener('resize', () =>
 {
     // Update sizes
-    sizes.width = canvas.clientWidth
-    sizes.height = canvas.clientHeight
+    sizes.width = canvas.parentElement.offsetWidth
+    sizes.height = canvas.parentElement.offsetHeight
 
     // Update camera
     camera.aspect = sizes.width / sizes.height
