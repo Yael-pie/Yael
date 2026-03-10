@@ -51,7 +51,7 @@ body {
     font-family: 'Raleway', sans-serif;
     font-size: max(20px, 1.04vw);
     font-weight: 400;
-    color: #777777;
+    color: black;
     text-align: center;
 }
 
@@ -177,7 +177,6 @@ body {
         z-index: 1;
         position: relative;
     }
-    
     #right_content {
         position: fixed;
         top: 0;
@@ -185,11 +184,21 @@ body {
         width: 100vw;
         height: 100vh;
         z-index: 0;
-        background-color: rgb(69, 165, 101);
+        background-color: black;
     }
     #right_content_bg_canva {
         width: 100vw;
         height: 100vh;
     }
-
+    #profile_name {
+        color: #777777;
+    }
+    #profile_subtitle {
+        color: #777777;
+    }
+    #profile_links {
+        background-color: #777777;
+        padding: max(10px, 0.52vw);
+        border-radius: max(5px, 0.26vw);
+    }
 }
