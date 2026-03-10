@@ -163,11 +163,11 @@ const sizes = {
     height: canvas.parentElement.offsetHeight
 }
 
-//check pour replacer
-// if (document.documentElement.clientWidth <= 1510) {
-//     planetEducation.visible = false
-//     planetProjects.visible = false
-// }
+// check pour replacer
+if (document.documentElement.clientWidth <= 1510) {
+    planetEducation.visible = false
+    planetProjects.visible = false
+}
 
 window.addEventListener('resize', () =>
 {
