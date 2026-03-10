@@ -18,7 +18,7 @@ scene.background = new THREE.Color(0x000000)
 
 //planetes projects et education
 
-const planetsPosition = new Float32Array(3000 * 3)
+const planetsPosition = new Float32Array(1000 * 3)
 const planetEducationColors = new Float32Array(3000 * 3)
 const planetProjectsColors = new Float32Array(3000 * 3)
 
