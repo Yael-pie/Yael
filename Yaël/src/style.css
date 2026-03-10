@@ -11,7 +11,7 @@ body {
     height: 100vh;
     width: 100vw;
     max-height: 100vh;
-    background-color: rgb(69, 165, 101);
+    background-color: black;
     display: flex;
     flex-direction: row;
 }
@@ -22,7 +22,7 @@ body {
     height: 100%;
     width: 15.625vw;
     min-width: 300px;
-    background-color: rgb(69, 165, 101);
+    background-color: #2e262e;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -51,7 +51,7 @@ body {
     font-family: 'Raleway', sans-serif;
     font-size: max(20px, 1.04vw);
     font-weight: 400;
-    color: #1b1b1b;
+    color: #777777;
     text-align: center;
 }
 
@@ -84,7 +84,7 @@ body {
     font-family: 'Raleway', sans-serif;
     font-size: max(16px, 0.83vw);
     font-weight: 400;
-    color: #000000;
+    color: #777777;
     margin-top: max(20px, 1.04vw);
     padding: 0 max(10px, 0.52vw);
     text-align: center;
@@ -111,7 +111,7 @@ body {
     font-size: max(15px, 0.78vw);
     font-weight: 400;
     color: #000;
-    background-color: rgb(219, 255, 222);
+    background-color: rgb(105, 105, 105);
     border-radius: max(30px, 1.56vw);
     padding: max(5px, 0.26vw) max(10px, 0.52vw);
     width: auto;
@@ -120,7 +120,7 @@ body {
 }
 
 .profile_tag:hover {
-    background-color: rgb(152, 255, 183);
+    background-color: rgb(167, 167, 167);
 }
 
 /* Right Content Section */
@@ -130,7 +130,7 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: rgb(96, 226, 140);
+    background-color: black;
     position: relative;
 }
 
@@ -169,7 +169,7 @@ body {
 @media (max-width: 950px) {
     body {
         flex-direction: column;
-        background-color: rgb(69, 165, 101);
+        background-color: black;
     }
     #left_profile {
         width: 100vw;
