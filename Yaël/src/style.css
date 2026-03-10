@@ -219,6 +219,7 @@ body {
     }
     #profile_about_text {
         border-color: #777777;
+        color: #777777;
     }
     #profile_picture {
         border-radius: 50%;
