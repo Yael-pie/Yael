@@ -1,0 +1,68 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #1e1a20;
+}
+
+/* main */
+
+.webgl
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+}
+
+/* parts */
+
+.section
+{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+    font-family: 'Cabin', sans-serif;
+    color: #ffeded;
+    text-transform: uppercase;
+    font-size: 7vmin;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+section:nth-child(even)
+{
+    align-items: flex-start;
+}
+
+#right_section {
+    align-items: flex-end;
+}
+
+.subtitle {
+    font-size: 3vmin;
+    margin-top: 20px;
+    color: #ffeded;
+    text-decoration: underline;
+}
+
+.subtitle:hover {
+    color: #ff7f7f;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 1380px) {
+
+    .section {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+}

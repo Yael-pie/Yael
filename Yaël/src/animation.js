@@ -41,3 +41,7 @@ button.addEventListener("mouseleave", () => {
         ease: "power2.out"
     });
 });
+
+button.addEventListener("click", () => {
+    window.location.href = "/Yael/src/about_me/index.html";
+});
