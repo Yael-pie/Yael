@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { FontLoader, TextGeometry } from 'three/examples/jsm/Addons.js'
+import './animation.js'
 
 /**
  * Base
@@ -74,7 +75,7 @@ scene.add(planetProjects)
 planetProjects.position.set(-10, 3)
 
 const planetEducation = new THREE.Points(planetsGeometryEducation, planetsMaterial)
-planetEducation.position.set(10, 1)
+planetEducation.position.set(10, 3)
 scene.add(planetEducation)
 
 // galaxie
@@ -225,6 +226,74 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.shadowMap.enabled = true
 
 /**
+ * Particle Box Décor (en gros étoiles)
+ */
+function generateParticleBox() {
+    const boxSize = 100
+    const particleCount = 5000
+    
+    const positions = new Float32Array(particleCount * 3)
+    const sizes = new Float32Array(particleCount)
+
+    for (let i = 0; i < particleCount; i++) {
+        const face = Math.floor(i / (particleCount / 6))
+        const posInFace = i % (particleCount / 6)
+
+        const i3 = i * 3
+        const randomU = Math.random()
+        const randomV = Math.random()
+
+        if (face === 0) {
+            positions[i3] = (randomU - 0.5) * boxSize
+            positions[i3 + 1] = (randomV - 0.5) * boxSize
+            positions[i3 + 2] = boxSize / 2
+        } else if (face === 1) {
+            positions[i3] = (randomU - 0.5) * boxSize
+            positions[i3 + 1] = (randomV - 0.5) * boxSize
+            positions[i3 + 2] = -boxSize / 2
+        } else if (face === 2) {
+            positions[i3] = boxSize / 2
+            positions[i3 + 1] = (randomV - 0.5) * boxSize
+            positions[i3 + 2] = (randomU - 0.5) * boxSize
+        } else if (face === 3) {
+            positions[i3] = -boxSize / 2
+            positions[i3 + 1] = (randomV - 0.5) * boxSize
+            positions[i3 + 2] = (randomU - 0.5) * boxSize
+        } else if (face === 4) {
+            positions[i3] = (randomU - 0.5) * boxSize
+            positions[i3 + 1] = boxSize / 2
+            positions[i3 + 2] = (randomV - 0.5) * boxSize
+        } else {
+            positions[i3] = (randomU - 0.5) * boxSize
+            positions[i3 + 1] = -boxSize / 2
+            positions[i3 + 2] = (randomV - 0.5) * boxSize
+        }
+        sizes[i] = Math.random() * 0.5 + 0.1
+    }
+
+    const boxGeometry = new THREE.BufferGeometry()
+    boxGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    boxGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+
+    const boxMaterial = new THREE.PointsMaterial({
+        size: 0.3,
+        sizeAttenuation: true,
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.6,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    })
+
+    const particleBox = new THREE.Points(boxGeometry, boxMaterial)
+    scene.add(particleBox)
+
+    return particleBox
+}
+
+const particleBox = generateParticleBox()
+
+/**
  * Animate
  */
 const clock = new THREE.Clock()
@@ -235,6 +304,11 @@ const tick = () =>
 
     // orbit controls update
     controls.update()
+
+    particleBox.position.copy(camera.position)
+
+    particleBox.rotation.x += 0.00005
+    particleBox.rotation.y += 0.00008
 
     // Render
     renderer.render(scene, camera)

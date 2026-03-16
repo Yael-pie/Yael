@@ -169,6 +169,43 @@ body {
     backdrop-filter: blur(10px);
 }
 
+/* Explore Button */
+
+#button_explore_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: 40px;
+    height: 20vh;
+}
+
+#button_explore {
+    z-index: 1;
+    font-family: 'Raleway', sans-serif;
+    font-size: max(20px, 1.04vw);
+    font-weight: 600;
+    color: #9a24a5;
+    background-color: transparent;
+    border: 2px solid #81129c;
+    padding: max(10px, 0.52vw) max(20px, 1.04vw);
+    border-radius: max(5px, 0.26vw);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(154, 36, 165, 0.5), 0 0 20px rgba(154, 36, 165, 0.3), inset 0 0 10px rgba(154, 36, 165, 0.1);
+}
+
+#button_explore:hover {
+    box-shadow: 0 0 20px rgba(154, 36, 165, 0.8), 0 0 40px rgba(212, 118, 255, 0.6), inset 0 0 15px rgba(154, 36, 165, 0.3);
+    background-color: rgba(210, 113, 255, 0.6);
+    border-color: rgba(210, 113, 255, 0.6);
+    color: rgba(210, 113, 255, 0.6);
+}
+
+.letter {
+    display: inline-block;
+}
+
 /*RESPONSIVE ICI*/
 
 @media (max-width: 950px) {
@@ -216,5 +253,8 @@ body {
     #profile_picture {
         border-radius: 50%;
         overflow: hidden;
+    }
+    #button_explore_container {
+        margin-bottom: -40px;
     }
 }
